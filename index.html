@@ -9,11 +9,7 @@
 
 <meta name="description" content="Relax with rain sounds for sleep, focus, and anxiety relief.">
 
-<!-- 애드센스 -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX"
-crossorigin="anonymous"></script>
-
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/style.css">
 
 </head>
 
@@ -21,33 +17,23 @@ crossorigin="anonymous"></script>
 
 <h1>🌧 RainMind</h1>
 
-<!-- 🔥 TOP AD -->
-{% include ads.html %}
-
 <div class="hero">
 <h2>Rain Sounds for Sleep, Focus & Relaxation</h2>
 <p>Customize your perfect rain environment</p>
 </div>
 
-<!-- 🔥 CTA -->
 <div class="cta">
 👉 Press Start and experience calm
 </div>
 
-<!-- 🔥 MID AD -->
-{% include ads.html %}
-
 <button id="mainBtn" onclick="toggle()">▶ Start</button>
 
-<!-- 🔥 BOTTOM AD -->
-{% include ads.html %}
-
-<footer>
-<a href="pages/about.md">About</a> |
-<a href="pages/privacy.md">Privacy</a>
+<footer style="margin-top:40px;">
+<a href="{{ site.baseurl }}/pages/about/">About</a> |
+<a href="{{ site.baseurl }}/pages/privacy/">Privacy</a>
 </footer>
 
-<script src="script.js"></script>
+<script src="{{ site.baseurl }}/script.js"></script>
 
 </body>
 </html>
