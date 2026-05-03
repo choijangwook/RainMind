@@ -107,3 +107,13 @@ function fadeOut(){
   },200);
 
 }
+
+let isPlaying=false;
+
+function presetClick(el,mode){
+
+  document.querySelectorAll(".grid button").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
+
+  applyPreset(mode);
+}
