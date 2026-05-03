@@ -26,34 +26,34 @@
 👉 Press Start and relax
 </div>
 
-<button id="mainBtn" onclick="toggle()">▶ Start</button>
+<button id="mainBtn">▶ Start</button>
 
 <div class="section">
 <h2>Mix</h2>
 
 <div class="row">
 <span>Rain</span>
-<input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVolume('rain', this.value)">
+<input type="range" min="0" max="1" step="0.01" value="0.5" data-sound="rain">
 </div>
 
 <div class="row">
 <span>Cafe</span>
-<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('cafe', this.value)">
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="cafe">
 </div>
 
 <div class="row">
 <span>Wind</span>
-<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('wind', this.value)">
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="wind">
 </div>
 
 <div class="row">
 <span>Thunder</span>
-<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('thunder', this.value)">
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="thunder">
 </div>
 
 <div class="row">
 <span>Drone</span>
-<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('drone', this.value)">
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="drone">
 </div>
 
 </div>
