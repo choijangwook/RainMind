@@ -1,25 +1,23 @@
 body {
-  background: #0b1220;
-  color: white;
-  text-align: center;
-  font-family: sans-serif;
+  background:#0b1220;
+  color:white;
+  text-align:center;
+  font-family:sans-serif;
 }
 
-.section {
-  margin: 20px;
-}
+.section { margin:20px; }
 
 button {
-  margin: 5px;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  background: #1f2937;
-  color: white;
+  margin:5px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:#1f2937;
+  color:white;
 }
 
 canvas {
-  position: fixed;
+  position:fixed;
   top:0;
   left:0;
   width:100%;
