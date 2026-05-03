@@ -1,75 +1,171 @@
-let audioCtx;
+let ctx, audioCtx;
+let layers = {}, gains = {};
+let panner, timer, autoPanInterval;
 
-let layers = {};
-let gains = {};
-let panner;
-
+// 초기화
 function init() {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-  createLayer("rain", "sounds/rain.mp3", 0.5);
-  createLayer("cafe", "sounds/cafe.mp3", 0);
-  createLayer("wind", "sounds/wind.mp3", 0);
-  createLayer("thunder", "sounds/thunder.mp3", 0);
+  createLayer("rain","sounds/rain.mp3",0.5);
+  createLayer("cafe","sounds/cafe.mp3",0);
+  createLayer("wind","sounds/wind.mp3",0);
+  createLayer("thunder","sounds/thunder.mp3",0);
+  createLayer("drone","sounds/drone.mp3",0);
 
   panner = audioCtx.createStereoPanner();
 
-  Object.values(layers).forEach(layer => {
-    layer.source.connect(panner).connect(audioCtx.destination);
+  Object.values(layers).forEach(l=>{
+    l.source.connect(panner).connect(audioCtx.destination);
+    l.audio.play();
   });
+
+  load();
+  initFX();
 }
 
-function createLayer(name, file, volume) {
-  const audio = new Audio(file);
-  audio.loop = true;
+// 레이어 생성
+function createLayer(name,file,vol){
+  let audio=new Audio(file);
+  audio.loop=true;
 
-  const source = audioCtx.createMediaElementSource(audio);
-  const gain = audioCtx.createGain();
-
-  gain.gain.value = volume;
+  let source=audioCtx.createMediaElementSource(audio);
+  let gain=audioCtx.createGain();
+  gain.gain.value=vol;
 
   source.connect(gain);
 
-  layers[name] = { audio, source, gain };
-  gains[name] = gain;
+  layers[name]={audio,source,gain};
+  gains[name]=gain;
 }
 
-function toggleSound() {
-  if (!audioCtx) {
-    init();
-    Object.values(layers).forEach(l => l.audio.play());
-  } else {
-    if (audioCtx.state === "running") {
-      audioCtx.suspend();
-    } else {
-      audioCtx.resume();
-    }
+// 토글
+function toggle(){
+  if(!audioCtx) init();
+  else audioCtx.state==="running"?audioCtx.suspend():audioCtx.resume();
+}
+
+// ===== MODE =====
+function applyMode(mode){
+  reset();
+
+  if(mode==="sleep"){
+    gains.rain.gain.value=0.3;
+    gains.drone.gain.value=0.2;
+    slowFade();
+  }
+
+  if(mode==="focus"){
+    gains.rain.gain.value=0.5;
+    gains.cafe.gain.value=0.2;
+  }
+
+  if(mode==="relax"){
+    gains.rain.gain.value=0.4;
+    gains.wind.gain.value=0.2;
+  }
+
+  if(mode==="anxiety"){
+    gains.rain.gain.value=0.2;
+    stablePattern();
   }
 }
 
-function setMode(mode) {
-  if (mode === "sleep") gains.rain.gain.value = 0.3;
-  if (mode === "focus") gains.rain.gain.value = 0.5;
-  if (mode === "relax") gains.rain.gain.value = 0.4;
-  if (mode === "anxiety") gains.rain.gain.value = 0.2;
+// ===== EMOTION =====
+function applyEmotion(e){
+  if(e==="calm") gains.rain.gain.value*=0.9;
+  if(e==="deep") gains.rain.gain.value*=1.2;
+  if(e==="warm") gains.drone.gain.value=0.2;
+  if(e==="lowvar") stablePattern();
 }
 
-function setEmotion(emotion) {
-  if (emotion === "calm") gains.rain.gain.value *= 0.9;
-  if (emotion === "deep") gains.rain.gain.value *= 1.1;
-  if (emotion === "warm") gains.rain.gain.value *= 0.95;
+// ===== 3D =====
+function setPan(v){
+  if(panner) panner.pan.value=v;
 }
 
-function setPan(value) {
-  if (panner) panner.pan.value = value;
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById("pan").addEventListener("input",e=>{
+    setPan(e.target.value);
+  });
+});
+
+function autoPan(){
+  clearInterval(autoPanInterval);
+  autoPanInterval=setInterval(()=>{
+    panner.pan.value=Math.sin(Date.now()/2000);
+  },100);
 }
 
-function toggleLayer(name) {
-  if (!gains[name]) return;
+// ===== 패턴 =====
+function slowFade(){
+  setInterval(()=>{
+    gains.rain.gain.value*=0.9995;
+  },1000);
+}
 
-  if (gains[name].gain.value === 0) {
-    gains[name].gain.value = 0.3;
-  } else {
-    gains[name].gain.value = 0;
-  }
+function stablePattern(){
+  setInterval(()=>{
+    gains.rain.gain.value=0.25;
+  },2000);
+}
+
+// ===== TIMER =====
+function setTimer(m){
+  clearInterval(timer);
+  let t=m*60;
+
+  timer=setInterval(()=>{
+    t--;
+    Object.values(gains).forEach(g=>{
+      g.gain.value*=0.999;
+    });
+    if(t<=0) clearInterval(timer);
+  },1000);
+}
+
+// ===== 저장 =====
+function save(){
+  let data={
+    rain:gains.rain.gain.value,
+    pan:panner.pan.value
+  };
+  localStorage.setItem("rainmind",JSON.stringify(data));
+}
+
+function load(){
+  let d=JSON.parse(localStorage.getItem("rainmind"));
+  if(!d) return;
+  gains.rain.gain.value=d.rain;
+  panner.pan.value=d.pan;
+}
+
+// ===== 리셋 =====
+function reset(){
+  Object.values(gains).forEach(g=>g.gain.value=0);
+}
+
+// ===== 인터랙션 FX =====
+function initFX(){
+  const canvas=document.getElementById("rainFX");
+  ctx=canvas.getContext("2d");
+
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
+  window.addEventListener("click",e=>{
+    drawRipple(e.clientX,e.clientY);
+  });
+}
+
+function drawRipple(x,y){
+  let r=0;
+  let anim=setInterval(()=>{
+    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    ctx.beginPath();
+    ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.strokeStyle="rgba(255,255,255,0.2)";
+    ctx.stroke();
+    r+=5;
+    if(r>200) clearInterval(anim);
+  },30);
 }
