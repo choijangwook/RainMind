@@ -139,3 +139,17 @@ function updateSliders(){
     s.value = sounds[s.dataset.sound].volume;
   });
 }
+
+// 🎯 타이머 버튼 클릭 UI + 기능
+function timerClick(el, min){
+
+  // 버튼 색 초기화
+  document.querySelectorAll(".timer-btn")
+    .forEach(b => b.classList.remove("active"));
+
+  // 현재 버튼 활성화
+  el.classList.add("active");
+
+  // 타이머 실행
+  setTimer(min);
+}
