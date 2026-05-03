@@ -1,0 +1,41 @@
+body {
+  background: #0b1220;
+  color: #fff;
+  font-family: sans-serif;
+  text-align: center;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 28px;
+}
+
+.subtitle {
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+
+.section {
+  margin: 20px 0;
+}
+
+button {
+  margin: 5px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #1f2937;
+  color: white;
+}
+
+.main-btn {
+  margin-top: 30px;
+  width: 80%;
+  padding: 15px;
+  font-size: 18px;
+  background: #2563eb;
+}
+
+input[type="range"] {
+  width: 80%;
+}
