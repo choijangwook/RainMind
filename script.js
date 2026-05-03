@@ -1,9 +1,15 @@
+let isPlaying = false;
+
 function toggle() {
   const btn = document.getElementById("mainBtn");
 
-  if (btn.innerText === "▶ Start") {
-    btn.innerText = "⏸ Stop";
-  } else {
+  if (!btn) return;
+
+  if (isPlaying) {
     btn.innerText = "▶ Start";
+    isPlaying = false;
+  } else {
+    btn.innerText = "⏸ Stop";
+    isPlaying = true;
   }
 }
