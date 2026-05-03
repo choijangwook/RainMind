@@ -215,3 +215,75 @@ function updateSliders(){
     if(sounds[k]) s.value = sounds[k].volume;
   });
 }
+
+
+// ===============================
+// ⏱ SAFE TIMER PATCH (ADD ONLY)
+// ===============================
+
+let remainingInterval = null;
+let remainingSeconds = 0;
+
+// ⏱ 타이머 UI (안전 추가)
+function timerUI(el, min){
+
+  // 기존 타이머 충돌 방지
+  clearTimeout(timerId);
+  clearInterval(remainingInterval);
+
+  // 버튼 active 처리 (기존 UI 영향 최소화)
+  document.querySelectorAll(".grid button")
+    .forEach(b=>{
+      if(!b.disabled) b.classList.remove("active");
+    });
+
+  el.classList.add("active");
+
+  // 시간 설정
+  remainingSeconds = min * 60;
+  updateTimerDisplay();
+
+  // 기존 fade 타이머 유지
+  timerId = setTimeout(()=>{
+    fadeOut();
+  }, remainingSeconds * 1000);
+
+  // ⏱ 실시간 표시
+  remainingInterval = setInterval(()=>{
+    remainingSeconds--;
+    updateTimerDisplay();
+
+    if(remainingSeconds <= 0){
+      clearInterval(remainingInterval);
+    }
+  },1000);
+}
+
+// ⏱ 화면 표시
+function updateTimerDisplay(){
+
+  const el = document.getElementById("timerDisplay");
+  if(!el) return;
+
+  let h = String(Math.floor(remainingSeconds/3600)).padStart(2,"0");
+  let m = String(Math.floor((remainingSeconds%3600)/60)).padStart(2,"0");
+  let s = String(remainingSeconds%60).padStart(2,"0");
+
+  el.innerText = `${h}:${m}:${s}`;
+}
+
+// ===============================
+// 🧠 Brave Mobile SAFE PATCH
+// ===============================
+
+// 터치 이벤트 fallback (모바일 클릭 차단 대응)
+document.addEventListener("touchstart", ()=>{}, {passive:true});
+
+// 안전 바인딩 함수 (필요 시 사용 가능)
+function safeBind(el, fn){
+  if(!el) return;
+  el.addEventListener("click", fn);
+  el.addEventListener("touchstart", fn);
+}
+
+
