@@ -1,10 +1,11 @@
 ---
-layout: page
-title: About
+layout: post
+title: About RainMind
+description: About RainMind
 ---
 
-## About RainMind
+## About
 
-RainMind is a customizable rain sound platform designed to help users sleep, focus, and relax.
+RainMind helps you relax, focus, and sleep better using customizable rain sounds.
 
-We provide ambient sound environments that improve mental clarity and reduce stress.
+This platform is designed for productivity, mental clarity, and relaxation.
