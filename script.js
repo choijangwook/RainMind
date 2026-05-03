@@ -9,19 +9,16 @@ const sounds = {
   drone: new Audio("sounds/drone.mp3")
 };
 
-// 초기화
 Object.values(sounds).forEach(a => {
   a.loop = true;
   a.volume = 0;
 });
 
-// ▶ Start / Stop
 document.addEventListener("DOMContentLoaded", () => {
 
   const btn = document.getElementById("mainBtn");
 
   btn.addEventListener("click", async () => {
-
     if (!isPlaying) {
       for (let a of Object.values(sounds)) {
         try { await a.play(); } catch(e){}
@@ -32,14 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       stopAll();
     }
-
   });
 
-  // 🎚 슬라이더
   document.querySelectorAll("input[type=range]").forEach(slider => {
     slider.addEventListener("input", (e) => {
-      const name = e.target.dataset.sound;
-      sounds[name].volume = parseFloat(e.target.value);
+      sounds[e.target.dataset.sound].volume = parseFloat(e.target.value);
     });
   });
 
@@ -55,7 +49,7 @@ function stopAll(){
   clearTimeout(timerId);
 }
 
-// 🎯 프리셋 (🔥 이거 없어서 다 죽은거)
+// 🎯 프리셋
 function applyPreset(mode){
 
   const presets = {
@@ -74,33 +68,35 @@ function applyPreset(mode){
   updateSliders();
 }
 
-// 🎯 버튼 클릭 UI
+// 🎯 버튼 UI
 function presetClick(el, mode){
-
   document.querySelectorAll(".preset-btn")
     .forEach(b => b.classList.remove("active"));
 
   el.classList.add("active");
-
   applyPreset(mode);
 }
 
-// ⏱ 타이머
+// ⏱ 타이머 (🔥 수정 핵심)
 function setTimer(min){
+
   clearTimeout(timerId);
 
-  timerId = setTimeout(()=>{
+  timerId = setTimeout(() => {
     fadeOut();
-  }, min * 60000);
+  }, min * 60 * 1000);
+
+  alert(min + " min timer set");
 }
 
 // 🌙 페이드아웃
 function fadeOut(){
 
-  let i = setInterval(()=>{
+  let i = setInterval(() => {
+
     let done = true;
 
-    Object.values(sounds).forEach(a=>{
+    Object.values(sounds).forEach(a => {
       if(a.volume > 0.01){
         a.volume -= 0.01;
         done = false;
