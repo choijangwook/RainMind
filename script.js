@@ -18,17 +18,24 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   const mainBtn = document.getElementById("mainBtn");
 
-  // ▶ Start / Stop
+  // ▶ Start / Stop (Brave 대응: user gesture 유지)
   if(mainBtn){
     mainBtn.addEventListener("click", async ()=>{
 
       if(!isPlaying){
+
         for(let a of Object.values(sounds)){
-          try{ await a.play(); }catch(e){}
+          try{
+            await a.play();
+          }catch(e){
+            console.log("audio blocked:", e);
+          }
         }
+
         mainBtn.innerText = "⏸ Stop";
         mainBtn.classList.add("active");
         isPlaying = true;
+
       }else{
         stopAll();
       }
@@ -46,25 +53,23 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   });
 
-  // 🎯 preset + timer + save/load 강제 연결
+  // 🎯 버튼 자동 연결
   document.querySelectorAll("button").forEach(btn=>{
 
     const t = btn.innerText.toLowerCase();
 
-    // preset
     if(t.includes("sleep")) btn.onclick = ()=>applyPreset(btn,"sleep");
     if(t.includes("focus")) btn.onclick = ()=>applyPreset(btn,"focus");
     if(t.includes("relax")) btn.onclick = ()=>applyPreset(btn,"relax");
     if(t.includes("anxiety")) btn.onclick = ()=>applyPreset(btn,"anxiety");
 
-    // timer
     if(t === "30m") btn.onclick = ()=>timerUI(btn,30);
     if(t === "1h") btn.onclick = ()=>timerUI(btn,60);
     if(t === "2h") btn.onclick = ()=>timerUI(btn,120);
     if(t === "4h") btn.onclick = ()=>timerUI(btn,240);
     if(t === "8h") btn.onclick = ()=>timerUI(btn,480);
 
-    // 💾 SAVE / LOAD (🔥 핵심 수정)
+    // 💾 SAVE / LOAD UX 개선
     if(t.includes("save")) btn.onclick = saveMix;
     if(t.includes("load")) btn.onclick = loadMix;
 
@@ -149,32 +154,58 @@ function fadeOut(){
   },200);
 }
 
-// 💾 SAVE
+// 💾 SAVE (🔥 alert 제거 → UX 개선)
 function saveMix(){
+
   let data = {};
   Object.keys(sounds).forEach(k=>{
     data[k] = sounds[k].volume;
   });
 
-  localStorage.setItem("rainmix", JSON.stringify(data));
-  alert("Saved ✔");
+  try {
+    localStorage.setItem("rainmix", JSON.stringify(data));
+
+    // 🔵 버튼 시각 피드백
+    const btns = document.querySelectorAll("button");
+    btns.forEach(b=>{
+      if(b.innerText.toLowerCase().includes("save")){
+        b.classList.add("active");
+        setTimeout(()=>b.classList.remove("active"),800);
+      }
+    });
+
+  } catch(e){
+    console.log("save failed", e);
+  }
 }
 
-// 📂 LOAD
+// 📂 LOAD (UX 개선)
 function loadMix(){
-  let data = localStorage.getItem("rainmix");
-  if(!data){
-    alert("No saved data");
-    return;
+
+  try {
+
+    let data = localStorage.getItem("rainmix");
+    if(!data) return;
+
+    let obj = JSON.parse(data);
+
+    Object.keys(obj).forEach(k=>{
+      if(sounds[k]) sounds[k].volume = obj[k];
+    });
+
+    updateSliders();
+
+    // 🔵 시각 피드백
+    document.querySelectorAll("button").forEach(b=>{
+      if(b.innerText.toLowerCase().includes("load")){
+        b.classList.add("active");
+        setTimeout(()=>b.classList.remove("active"),800);
+      }
+    });
+
+  } catch(e){
+    console.log("load failed", e);
   }
-
-  let obj = JSON.parse(data);
-
-  Object.keys(obj).forEach(k=>{
-    if(sounds[k]) sounds[k].volume = obj[k];
-  });
-
-  updateSliders();
 }
 
 // 🎚 sync
