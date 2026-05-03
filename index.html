@@ -13,24 +13,23 @@
 <p>Rain Focus Rain</p>
 
 <div class="section">
-<h2>Quick Mode</h2>
-<button onclick="applyMode('sleep')">😴 Sleep</button>
-<button onclick="applyMode('focus')">📚 Focus</button>
-<button onclick="applyMode('relax')">🧘 Relax</button>
-<button onclick="applyMode('anxiety')">😟 Anxiety</button>
+<h2>AI Quick Start</h2>
+<button onclick="applyState('sleepy')">😴 Sleepy</button>
+<button onclick="applyState('focus')">📚 Need Focus</button>
+<button onclick="applyState('stress')">😵 Stress</button>
 </div>
 
 <div class="section">
-<h2>Emotion</h2>
-<button onclick="applyEmotion('calm')">Calm</button>
-<button onclick="applyEmotion('deep')">Deep</button>
-<button onclick="applyEmotion('warm')">Warm</button>
-<button onclick="applyEmotion('lowvar')">Stable</button>
+<h2>Mode</h2>
+<button onclick="applyMode('sleep')">Sleep</button>
+<button onclick="applyMode('focus')">Focus</button>
+<button onclick="applyMode('relax')">Relax</button>
+<button onclick="applyMode('anxiety')">Anxiety</button>
 </div>
 
 <div class="section">
 <h2>3D Space</h2>
-<input type="range" min="-1" max="1" step="0.1" value="0" id="pan">
+<input type="range" min="-1" max="1" step="0.1" id="pan">
 <button onclick="autoPan()">Auto Move</button>
 </div>
 
@@ -41,10 +40,15 @@
 <button onclick="setTimer(90)">90m</button>
 </div>
 
+<div class="section">
+<h2>Stats</h2>
+<p id="stats"></p>
+</div>
+
 <button onclick="save()">💾 Save</button>
 <button onclick="toggle()">▶ Start</button>
 
-<canvas id="rainFX"></canvas>
+<canvas id="fx"></canvas>
 
 <script src="script.js"></script>
 </body>
