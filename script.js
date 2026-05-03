@@ -1,4 +1,5 @@
 let audioCtx, layers={}, gains={}, panner, timer;
+let isPlaying=false;
 
 // INIT
 function init(){
@@ -17,8 +18,6 @@ function init(){
     l.audio.play();
     l.gain.gain.value=0;
   });
-
-  gains.rain.gain.value=0.5;
 }
 
 // CREATE
@@ -35,75 +34,91 @@ function create(name,file){
   gains[name]=g;
 }
 
-// START
+// START/STOP
 function toggle(){
-  if(!audioCtx) init();
-  else audioCtx.state==="running"?audioCtx.suspend():audioCtx.resume();
+  if(!audioCtx){
+    init();
+    isPlaying=true;
+  } else if(audioCtx.state==="running"){
+    audioCtx.suspend();
+    isPlaying=false;
+  } else {
+    audioCtx.resume();
+    isPlaying=true;
+  }
+
+  document.getElementById("mainBtn").innerText =
+    isPlaying ? "⏸ Stop" : "▶ Start";
 }
 
-// MODE
-function applyMode(m){
+// MODE + ACTIVE UI
+function applyMode(btn,mode){
+  document.querySelectorAll(".btn-group button")
+    .forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+
   reset();
 
-  if(m==="sleep"){
+  if(mode==="sleep"){
     fade(gains.rain,0.3);
-    fade(gains.drone,0.2);
+    fade(gains.drone,0.25);
   }
 
-  if(m==="focus"){
+  if(mode==="focus"){
     fade(gains.rain,0.5);
-    fade(gains.cafe,0.2);
+    fade(gains.cafe,0.25);
   }
 
-  if(m==="relax"){
+  if(mode==="relax"){
     fade(gains.rain,0.4);
-    fade(gains.wind,0.2);
+    fade(gains.wind,0.25);
   }
 
-  if(m==="anxiety"){
+  if(mode==="anxiety"){
     fade(gains.rain,0.2);
   }
 }
 
+// VOLUME
+function setVolume(name,val){
+  fade(gains[name],parseFloat(val));
+}
+
 // FADE
-function fade(gain,target){
-  let step=(target-gain.gain.value)/20;
+function fade(g,target){
+  let step=(target-g.gain.value)/20;
   let i=0;
 
   let f=setInterval(()=>{
-    gain.gain.value+=step;
+    g.gain.value+=step;
     i++;
     if(i>=20) clearInterval(f);
-  },50);
+  },30);
 }
 
-// RESET
+// RESET (완전 무음)
 function reset(){
-  Object.values(gains).forEach(g=>fade(g,0));
+  Object.values(gains).forEach(g=>g.gain.value=0);
 }
-
-// VOLUME
-function setVolume(name,val){
-  fade(gains[name],val);
-}
-
-// PAN
-document.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("pan").addEventListener("input",e=>{
-    if(panner) panner.pan.value=e.target.value;
-  });
-});
 
 // TIMER
-function setTimer(m){
+function setTimer(min){
   clearInterval(timer);
-  let t=m*60;
+  let t=min*60;
 
   timer=setInterval(()=>{
     t--;
-    Object.values(gains).forEach(g=>{
-      g.gain.value*=0.999;
-    });
-    if(t<=0) clearInterval(timer);
+
+    if(t<=0){
+      fadeOutAll();
+      clearInterval(timer);
+    }
   },1000);
+}
+
+// 전체 페이드 아웃
+function fadeOutAll(){
+  Object.values(gains).forEach(g=>{
+    fade(g,0);
+  });
 }
