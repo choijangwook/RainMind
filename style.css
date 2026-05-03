@@ -3,20 +3,12 @@ body {
   color:white;
   text-align:center;
   font-family:sans-serif;
-  padding:10px;
 }
 
-h1 {
-  font-size:26px;
-}
+.section { margin:20px; }
 
-.subtitle {
-  opacity:0.7;
-  margin-bottom:10px;
-}
-
-.section {
-  margin:20px 0;
+.btn-group button.active {
+  background:#2563eb;
 }
 
 button {
@@ -28,7 +20,7 @@ button {
   color:white;
 }
 
-.main-btn {
+#mainBtn {
   width:90%;
   padding:16px;
   font-size:18px;
@@ -36,31 +28,19 @@ button {
   background:#2563eb;
 }
 
+.row {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin:5px 0;
+}
+
+.row span {
+  width:80px;
+  text-align:right;
+}
+
 input[type="range"] {
-  width:80%;
-}
-
-/* 🔥 광고 스타일 */
-.ad {
-  margin:20px auto;
-  max-width:320px;
-  text-align:center;
-}
-
-.top-ad {
-  margin-top:10px;
-}
-
-.middle-ad {
-  margin:30px 0;
-}
-
-.bottom-ad {
-  margin:40px 0;
-}
-
-/* 🔥 유도 텍스트 */
-.info {
-  margin-top:20px;
-  opacity:0.8;
+  width:60%;
 }
