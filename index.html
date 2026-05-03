@@ -1,46 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>RainMind - Rain Focus Rain</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RainMind</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <h1>🌧 RainMind</h1>
-<p class="subtitle">Rain Focus Rain</p>
+<p>Rain Focus Rain</p>
 
 <div class="section">
-  <h2>Mode</h2>
-  <button onclick="setMode('sleep')">Sleep</button>
-  <button onclick="setMode('focus')">Focus</button>
-  <button onclick="setMode('relax')">Relax</button>
-  <button onclick="setMode('anxiety')">Anxiety</button>
+<h2>Quick Mode</h2>
+<button onclick="applyMode('sleep')">😴 Sleep</button>
+<button onclick="applyMode('focus')">📚 Focus</button>
+<button onclick="applyMode('relax')">🧘 Relax</button>
+<button onclick="applyMode('anxiety')">😟 Anxiety</button>
 </div>
 
 <div class="section">
-  <h2>Emotion</h2>
-  <button onclick="setEmotion('calm')">Calm</button>
-  <button onclick="setEmotion('deep')">Deep</button>
-  <button onclick="setEmotion('warm')">Warm</button>
+<h2>Emotion</h2>
+<button onclick="applyEmotion('calm')">Calm</button>
+<button onclick="applyEmotion('deep')">Deep</button>
+<button onclick="applyEmotion('warm')">Warm</button>
+<button onclick="applyEmotion('lowvar')">Stable</button>
 </div>
 
 <div class="section">
-  <h2>3D Space</h2>
-  <input type="range" min="-1" max="1" step="0.1" value="0" oninput="setPan(this.value)">
+<h2>3D Space</h2>
+<input type="range" min="-1" max="1" step="0.1" value="0" id="pan">
+<button onclick="autoPan()">Auto Move</button>
 </div>
 
 <div class="section">
-  <h2>Mix</h2>
-  <label><input type="checkbox" onchange="toggleLayer('cafe')"> Cafe</label>
-  <label><input type="checkbox" onchange="toggleLayer('wind')"> Wind</label>
-  <label><input type="checkbox" onchange="toggleLayer('thunder')"> Thunder</label>
+<h2>Timer</h2>
+<button onclick="setTimer(30)">30m</button>
+<button onclick="setTimer(60)">60m</button>
+<button onclick="setTimer(90)">90m</button>
 </div>
 
-<button class="main-btn" onclick="toggleSound()">▶ Start</button>
+<button onclick="save()">💾 Save</button>
+<button onclick="toggle()">▶ Start</button>
 
-</body>
+<canvas id="rainFX"></canvas>
+
 <script src="script.js"></script>
+</body>
 </html>
