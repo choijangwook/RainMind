@@ -1,44 +1,47 @@
 let isPlaying = false;
 
 const sounds = {
-  rain: new Audio(),
-  cafe: new Audio(),
-  wind: new Audio(),
-  thunder: new Audio(),
-  drone: new Audio()
+  rain: new Audio("sounds/rain.mp3"),
+  cafe: new Audio("sounds/cafe.mp3"),
+  wind: new Audio("sounds/wind.mp3"),
+  thunder: new Audio("sounds/thunder.mp3"),
+  drone: new Audio("sounds/drone.mp3")
 };
 
-// 🔥 파일 경로 연결
-sounds.rain.src = "sounds/rain.mp3";
-sounds.cafe.src = "sounds/cafe.mp3";
-sounds.wind.src = "sounds/wind.mp3";
-sounds.thunder.src = "sounds/thunder.mp3";
-sounds.drone.src = "sounds/drone.mp3";
-
-// 🔁 반복 재생
+// 초기 설정
 Object.values(sounds).forEach(audio => {
   audio.loop = true;
   audio.volume = 0;
 });
 
-// ▶ Start / Stop
-function toggle() {
+// 🔥 버튼 이벤트 강제 연결
+document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("mainBtn");
 
-  if (!isPlaying) {
-    Object.values(sounds).forEach(audio => audio.play());
-    btn.innerText = "⏸ Stop";
-    isPlaying = true;
-  } else {
-    Object.values(sounds).forEach(audio => audio.pause());
-    btn.innerText = "▶ Start";
-    isPlaying = false;
-  }
-}
+  btn.addEventListener("click", async () => {
+    if (!isPlaying) {
+      // 모바일 autoplay 정책 대응
+      for (let audio of Object.values(sounds)) {
+        try {
+          await audio.play();
+        } catch (e) {}
+      }
+      btn.innerText = "⏸ Stop";
+      isPlaying = true;
+    } else {
+      Object.values(sounds).forEach(a => a.pause());
+      btn.innerText = "▶ Start";
+      isPlaying = false;
+    }
+  });
 
-// 🎚 볼륨 조절
-function setVolume(name, value) {
-  if (sounds[name]) {
-    sounds[name].volume = value;
-  }
-}
+  // 🎚 슬라이더 이벤트
+  document.querySelectorAll("input[type=range]").forEach(slider => {
+    slider.addEventListener("input", (e) => {
+      const name = e.target.dataset.sound;
+      if (sounds[name]) {
+        sounds[name].volume = parseFloat(e.target.value);
+      }
+    });
+  });
+});
