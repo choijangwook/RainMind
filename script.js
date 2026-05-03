@@ -9,7 +9,6 @@ const sounds = {
   drone: new Audio("sounds/drone.mp3")
 };
 
-// 초기 세팅
 Object.values(sounds).forEach(a=>{
   a.loop = true;
   a.volume = 0;
@@ -19,39 +18,48 @@ document.addEventListener("DOMContentLoaded",()=>{
 
   const btn = document.getElementById("mainBtn");
 
+  // ▶ Start
   btn.addEventListener("click", async ()=>{
 
     if(!isPlaying){
       for(let a of Object.values(sounds)){
-        try { await a.play(); } catch(e){}
+        try{await a.play();}catch(e){}
       }
       btn.innerText = "⏸ Stop";
+      btn.classList.add("active");
       isPlaying = true;
-    } else {
+    }else{
       stopAll();
     }
 
   });
 
   // 슬라이더
-  document.querySelectorAll("input[type=range]").forEach(slider=>{
-    slider.addEventListener("input",e=>{
+  document.querySelectorAll("input[type=range]").forEach(s=>{
+    s.addEventListener("input",e=>{
       sounds[e.target.dataset.sound].volume = parseFloat(e.target.value);
     });
   });
 
 });
 
-// ⛔ 정지
+// ⛔ stop
 function stopAll(){
   Object.values(sounds).forEach(a=>a.pause());
-  document.getElementById("mainBtn").innerText = "▶ Start";
+  const btn = document.getElementById("mainBtn");
+  btn.innerText = "▶ Start";
+  btn.classList.remove("active");
   isPlaying = false;
   clearTimeout(timerId);
 }
 
 // 🎯 프리셋
-function applyPreset(mode){
+function presetClick(el,mode){
+
+  document.querySelectorAll(".preset-row button")
+    .forEach(b=>b.classList.remove("active"));
+
+  el.classList.add("active");
 
   const presets = {
     sleep:{rain:0.7, wind:0.2},
@@ -65,22 +73,27 @@ function applyPreset(mode){
   for(let k in presets[mode]){
     sounds[k].volume = presets[mode][k];
   }
-
-  updateSliders();
 }
 
-// ⏱ 타이머 (기본)
-function setTimer(min){
+// ⏱ 타이머 (복구 완료)
+function timerClick(el,min){
+
+  document.querySelectorAll(".grid button")
+    .forEach(b=>b.classList.remove("active"));
+
+  el.classList.add("active");
+
   clearTimeout(timerId);
 
   timerId = setTimeout(()=>{
     fadeOut();
-  }, min * 60 * 1000);
+  }, min*60000);
 }
 
-// 🌙 페이드아웃
+// 🌙 fade
 function fadeOut(){
   let i = setInterval(()=>{
+
     let done = true;
 
     Object.values(sounds).forEach(a=>{
@@ -98,9 +111,22 @@ function fadeOut(){
   },200);
 }
 
-// 슬라이더 업데이트
-function updateSliders(){
-  document.querySelectorAll("input[type=range]").forEach(s=>{
-    s.value = sounds[s.dataset.sound].volume;
+// 💾 save
+function saveMix(){
+  let data = {};
+  Object.keys(sounds).forEach(k=>data[k]=sounds[k].volume);
+  localStorage.setItem("rainmix",JSON.stringify(data));
+  alert("Saved");
+}
+
+// 📂 load
+function loadMix(){
+  let data = localStorage.getItem("rainmix");
+  if(!data) return;
+
+  let obj = JSON.parse(data);
+
+  Object.keys(obj).forEach(k=>{
+    if(sounds[k]) sounds[k].volume = obj[k];
   });
 }
