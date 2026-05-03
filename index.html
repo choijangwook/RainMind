@@ -152,12 +152,17 @@ a:visited {
 
 <!-- ⏱ 타이머 -->
 <div class="grid">
-<button onclick="timerClick(this,30)">30m</button>
-<button onclick="timerClick(this,60)">1h</button>
-<button onclick="timerClick(this,120)">2h</button>
-<button onclick="timerClick(this,240)">4h</button>
-<button onclick="timerClick(this,480)">8h</button>
+
+<button id="timerDisplay" disabled>--:--:--</button>
+
+<button onclick="timerUI(this,60)">1h</button>
+<button onclick="timerUI(this,120)">2h</button>
+<button onclick="timerUI(this,240)">4h</button>
+<button onclick="timerUI(this,480)">8h</button>
+
 </div>
+
+ 
 
 <script src="script.js"></script>
 
