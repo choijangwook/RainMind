@@ -43,3 +43,14 @@ h1 {
   background:#007bff !important;
   color:#fff !important;
 }
+
+
+button, input {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+}
+
+/* Brave / 모바일 클릭 안정 */
+.grid button {
+  -webkit-tap-highlight-color: transparent;
+}
