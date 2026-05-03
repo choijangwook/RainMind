@@ -28,6 +28,36 @@
 
 <button id="mainBtn" onclick="toggle()">▶ Start</button>
 
+<div class="section">
+<h2>Mix</h2>
+
+<div class="row">
+<span>Rain</span>
+<input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVolume('rain', this.value)">
+</div>
+
+<div class="row">
+<span>Cafe</span>
+<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('cafe', this.value)">
+</div>
+
+<div class="row">
+<span>Wind</span>
+<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('wind', this.value)">
+</div>
+
+<div class="row">
+<span>Thunder</span>
+<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('thunder', this.value)">
+</div>
+
+<div class="row">
+<span>Drone</span>
+<input type="range" min="0" max="1" step="0.01" value="0" oninput="setVolume('drone', this.value)">
+</div>
+
+</div>
+
 <footer style="margin-top:40px;">
 <a href="{{ site.baseurl }}/about/">About</a> |
 <a href="{{ site.baseurl }}/privacy/">Privacy</a>
