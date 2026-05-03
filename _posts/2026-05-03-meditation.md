@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "Rain for Meditation"
-description: "Mindfulness sound"
+title: "Rain Sounds for Deep Sleep"
+description: "Sleep better with rain sounds"
 categories: [meditation]
 ---
 
-## 🧘 Meditation Rain
+## 🌧 Rain Sounds for Sleep
 
-Perfect background for mindfulness.
+Rain sound helps calm your mind and improve sleep quality.
 
-👉 [Start Meditation]({{ site.baseurl }}/index.html)
+👉 [Start Sleep Mode]({{ site.baseurl }}/index.html)
