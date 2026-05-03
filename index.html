@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>RainMind</title>
+<title>RainMind - Rain Sounds for Sleep & Focus</title>
+
+<meta name="description" content="Relax with rain sounds for sleep, focus, and anxiety relief.">
+
+<!-- 🔥 애드센스 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXX"
+crossorigin="anonymous"></script>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <h1>🌧 RainMind</h1>
+
+<!-- TOP AD -->
+<ins class="adsbygoogle"
+ style="display:block"
+ data-ad-client="ca-pub-XXXXXXXX"
+ data-ad-slot="1111111111"
+ data-ad-format="auto"></ins>
 
 <div class="section">
 <h2>Mode</h2>
@@ -23,32 +38,50 @@
 </div>
 </div>
 
+<!-- MIDDLE AD -->
+<ins class="adsbygoogle"
+ style="display:block"
+ data-ad-client="ca-pub-XXXXXXXX"
+ data-ad-slot="2222222222"
+ data-ad-format="auto"></ins>
+
 <div class="section">
 <h2>Mix</h2>
-
-<div class="row"><span>Rain</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('rain', this.value)"></div>
-<div class="row"><span>Cafe</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('cafe', this.value)"></div>
-<div class="row"><span>Wind</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('wind', this.value)"></div>
-<div class="row"><span>Thunder</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('thunder', this.value)"></div>
-<div class="row"><span>Drone</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('drone', this.value)"></div>
-
+<div class="row"><span>Rain</span><input type="range" oninput="setVolume('rain',this.value)"></div>
+<div class="row"><span>Cafe</span><input type="range" oninput="setVolume('cafe',this.value)"></div>
+<div class="row"><span>Wind</span><input type="range" oninput="setVolume('wind',this.value)"></div>
+<div class="row"><span>Thunder</span><input type="range" oninput="setVolume('thunder',this.value)"></div>
+<div class="row"><span>Drone</span><input type="range" oninput="setVolume('drone',this.value)"></div>
 </div>
 
 <div class="section">
-<h2>Timer</h2>
-<button onclick="setTimer(30)">30m</button>
-<button onclick="setTimer(60)">1h</button>
-<button onclick="setTimer(120)">2h</button>
-<button onclick="setTimer(240)">4h</button>
-<button onclick="setTimer(480)">8h</button>
+<button onclick="setTimer(60)">1h Timer</button>
+<button onclick="savePreset()">Save</button>
+<button onclick="loadPreset()">Load</button>
 </div>
 
-<div class="section">
-<button onclick="savePreset()">💾 Save</button>
-<button onclick="loadPreset()">📂 Load</button>
+<div class="info">
+👉 Best combo: Rain + Cafe for deep focus  
+👉 Try Sleep mode before bedtime
 </div>
+
+<!-- BOTTOM AD -->
+<ins class="adsbygoogle"
+ style="display:block"
+ data-ad-client="ca-pub-XXXXXXXX"
+ data-ad-slot="3333333333"
+ data-ad-format="auto"></ins>
 
 <button id="mainBtn" onclick="toggle()">▶ Start</button>
+
+<footer>
+<a href="about.html">About</a> |
+<a href="privacy.html">Privacy</a>
+</footer>
+
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 <script src="script.js"></script>
 </body>
