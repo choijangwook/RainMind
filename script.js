@@ -9,36 +9,61 @@ const sounds = {
   drone: new Audio("sounds/drone.mp3")
 };
 
+// 초기 세팅
 Object.values(sounds).forEach(a=>{
   a.loop = true;
   a.volume = 0;
 });
 
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", ()=>{
 
-  const btn = document.getElementById("mainBtn");
+  console.log("RainMind loaded");
 
-  // ▶ Start
-  btn.addEventListener("click", async ()=>{
+  // ▶ Start / Stop
+  const mainBtn = document.getElementById("mainBtn");
 
-    if(!isPlaying){
-      for(let a of Object.values(sounds)){
-        try{await a.play();}catch(e){}
+  if(mainBtn){
+    mainBtn.addEventListener("click", async ()=>{
+
+      if(!isPlaying){
+        for(let a of Object.values(sounds)){
+          try{ await a.play(); }catch(e){}
+        }
+        mainBtn.innerText = "⏸ Stop";
+        mainBtn.classList.add("active");
+        isPlaying = true;
+      }else{
+        stopAll();
       }
-      btn.innerText = "⏸ Stop";
-      btn.classList.add("active");
-      isPlaying = true;
-    }else{
-      stopAll();
-    }
 
+    });
+  }
+
+  // 🎚 BAR (슬라이더)
+  document.querySelectorAll("input[type=range]").forEach(slider=>{
+    slider.addEventListener("input", (e)=>{
+      const key = e.target.dataset.sound;
+      if(sounds[key]){
+        sounds[key].volume = parseFloat(e.target.value);
+      }
+    });
   });
 
-  // 슬라이더
-  document.querySelectorAll("input[type=range]").forEach(s=>{
-    s.addEventListener("input",e=>{
-      sounds[e.target.dataset.sound].volume = parseFloat(e.target.value);
-    });
+  // 🎯 프리셋 버튼 강제 연결 (핵심)
+  document.querySelectorAll(".preset-row button, .grid button").forEach(btn=>{
+    const txt = btn.innerText.toLowerCase();
+
+    if(txt.includes("sleep")) btn.onclick = ()=>applyPresetUI(btn,"sleep");
+    if(txt.includes("focus")) btn.onclick = ()=>applyPresetUI(btn,"focus");
+    if(txt.includes("relax")) btn.onclick = ()=>applyPresetUI(btn,"relax");
+    if(txt.includes("anxiety")) btn.onclick = ()=>applyPresetUI(btn,"anxiety");
+
+    // timer 버튼
+    if(txt.includes("30m")) btn.onclick = ()=>timerUI(btn,30);
+    if(txt.includes("1h")) btn.onclick = ()=>timerUI(btn,60);
+    if(txt.includes("2h")) btn.onclick = ()=>timerUI(btn,120);
+    if(txt.includes("4h")) btn.onclick = ()=>timerUI(btn,240);
+    if(txt.includes("8h")) btn.onclick = ()=>timerUI(btn,480);
   });
 
 });
@@ -46,18 +71,23 @@ document.addEventListener("DOMContentLoaded",()=>{
 // ⛔ stop
 function stopAll(){
   Object.values(sounds).forEach(a=>a.pause());
+
   const btn = document.getElementById("mainBtn");
-  btn.innerText = "▶ Start";
-  btn.classList.remove("active");
+  if(btn){
+    btn.innerText = "▶ Start";
+    btn.classList.remove("active");
+  }
+
   isPlaying = false;
   clearTimeout(timerId);
 }
 
-// 🎯 프리셋
-function presetClick(el,mode){
+// 🎯 preset
+function applyPresetUI(el,mode){
 
-  document.querySelectorAll(".preset-row button")
-    .forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll("button").forEach(b=>{
+    if(b.classList) b.classList.remove("active");
+  });
 
   el.classList.add("active");
 
@@ -73,13 +103,16 @@ function presetClick(el,mode){
   for(let k in presets[mode]){
     sounds[k].volume = presets[mode][k];
   }
+
+  updateSliders();
 }
 
-// ⏱ 타이머 (복구 완료)
-function timerClick(el,min){
+// ⏱ timer
+function timerUI(el,min){
 
-  document.querySelectorAll(".grid button")
-    .forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".grid button").forEach(b=>{
+    b.classList.remove("active");
+  });
 
   el.classList.add("active");
 
@@ -92,6 +125,7 @@ function timerClick(el,min){
 
 // 🌙 fade
 function fadeOut(){
+
   let i = setInterval(()=>{
 
     let done = true;
@@ -111,22 +145,10 @@ function fadeOut(){
   },200);
 }
 
-// 💾 save
-function saveMix(){
-  let data = {};
-  Object.keys(sounds).forEach(k=>data[k]=sounds[k].volume);
-  localStorage.setItem("rainmix",JSON.stringify(data));
-  alert("Saved");
-}
-
-// 📂 load
-function loadMix(){
-  let data = localStorage.getItem("rainmix");
-  if(!data) return;
-
-  let obj = JSON.parse(data);
-
-  Object.keys(obj).forEach(k=>{
-    if(sounds[k]) sounds[k].volume = obj[k];
+// 🎚 sync
+function updateSliders(){
+  document.querySelectorAll("input[type=range]").forEach(s=>{
+    const k = s.dataset.sound;
+    if(sounds[k]) s.value = sounds[k].volume;
   });
 }
