@@ -1,1 +1,167 @@
+---
+layout: null
+---
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>RainMind - Rain Sounds</title>
+
+<meta name="description" content="Rain sounds for sleep, focus, relaxation and anxiety relief.">
+
+<link rel="stylesheet" href="assets/style.css">
+
+<style>
+body {
+  background:#fff;
+  color:#111;
+  padding:16px;
+  max-width:600px;
+  margin:auto;
+  font-family:sans-serif;
+}
+
+.topbar {
+  display:flex;
+  justify-content:flex-end;
+  gap:15px;
+  margin-bottom:10px;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  background:#222;
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:15px;
+  transition:0.2s;
+}
+
+/* 🔥 클릭 유지 상태 */
+button.active {
+  background:#007bff;
+}
+
+/* 🔥 가독성 유지 (눌림 깜빡임 방지) */
+button:active {
+  background:#444;
+}
+
+.grid {
+  display:flex;
+  gap:6px;
+}
+
+.grid button {
+  flex:1;
+  font-size:13px;
+  padding:10px 4px;
+}
+
+.row {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:6px 0;
+}
+
+.row span {
+  width:80px;
+}
+
+input[type=range] {
+  flex:1;
+}
+
+.ad {
+  margin:15px 0;
+  text-align:center;
+  padding:10px;
+  background:#f5f5f5;
+  border-radius:6px;
+}
+
+h1 {
+  text-align:center;
+  margin-bottom:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- 🔝 상단 -->
+<div class="topbar">
+<a href="/RainMind/about/">About</a>
+<a href="/RainMind/privacy/">Privacy</a>
+</div>
+
+<h1>🌧 RainMind</h1>
+
+<!-- 📘 사용 설명 (정상 렌더링) -->
+{% capture guide %}{% include_relative pages/guide.md %}{% endcapture %}
+{{ guide | markdownify }}
+
+<!-- 🔥 광고 -->
+<div class="ad">Ad</div>
+
+<!-- ▶ 버튼 -->
+<button id="mainBtn">▶ Start</button>
+
+<!-- 💾 -->
+<div class="grid">
+<button onclick="saveMix()">💾 Save</button>
+<button onclick="loadMix()">📂 Load</button>
+</div>
+
+<!-- 🎯 프리셋 -->
+<div class="grid">
+<button class="preset-btn" onclick="presetClick(this,'sleep')">😴 sleep</button>
+<button class="preset-btn" onclick="presetClick(this,'focus')">📚 focus</button>
+<button class="preset-btn" onclick="presetClick(this,'relax')">🧘 relax</button>
+<button class="preset-btn" onclick="presetClick(this,'anxiety')">😟 anxiety</button>
+</div>
+
+<!-- 🔥 광고 -->
+<div class="ad">Ad</div>
+
+<!-- 🎚 믹스 -->
+<div class="row"><span>Rain</span>
+<input type="range" min="0" max="1" step="0.01" value="0.5" data-sound="rain"></div>
+
+<div class="row"><span>Cafe</span>
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="cafe"></div>
+
+<div class="row"><span>Wind</span>
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="wind"></div>
+
+<div class="row"><span>Thunder</span>
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="thunder"></div>
+
+<div class="row"><span>Drone</span>
+<input type="range" min="0" max="1" step="0.01" value="0" data-sound="drone"></div>
+
+<!-- 🔥 광고 -->
+<div class="ad">Ad</div>
+
+<!-- ⏱ 타이머 -->
+<div class="grid">
+<button onclick="setTimer(30)">30m</button>
+<button onclick="setTimer(60)">1h</button>
+<button onclick="setTimer(120)">2h</button>
+<button onclick="setTimer(240)">4h</button>
+<button onclick="setTimer(480)">8h</button>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
