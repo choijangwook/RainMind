@@ -153,3 +153,19 @@ function timerClick(el, min){
   // 타이머 실행
   setTimer(min);
 }
+
+// 🔥 타이머 UI 안전 래퍼 (기존 구조 보호)
+function setTimerUI(el, min){
+
+  // 버튼 색 초기화
+  document.querySelectorAll(".timer-btn")
+    .forEach(b => b.classList.remove("active"));
+
+  // 현재 버튼 활성화
+  el.classList.add("active");
+
+  // 기존 타이머 기능 호출 (있으면 사용)
+  if (typeof setTimer === "function") {
+    setTimer(min);
+  }
+}
