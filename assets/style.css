@@ -39,3 +39,7 @@ h1 {
   list-style:none;
   margin:5px 0;
 }
+.timer-btn.active {
+  background:#007bff !important;
+  color:#fff !important;
+}
