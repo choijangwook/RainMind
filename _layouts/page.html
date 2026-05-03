@@ -9,19 +9,44 @@
 
 <link rel="stylesheet" href="{{ site.baseurl }}/assets/style.css">
 
+<style>
+body {
+  background:#fff;
+  color:#111;
+  padding:16px;
+  max-width:600px;
+  margin:auto;
+  font-family:sans-serif;
+}
+
+a {
+  color:#000;
+  text-decoration:none;
+}
+
+/* 🔥 보라색 방지 */
+a:visited {
+  color:#000;
+}
+
+a:hover {
+  text-decoration:underline;
+}
+</style>
+
 </head>
 
 <body>
 
 <h1>{{ page.title }}</h1>
 
-<div class="content">
+<div>
 {{ content }}
 </div>
 
-<footer style="margin-top:40px;">
-<a href="{{ site.baseurl }}/index.html">🏠 Home</a>
-</footer>
+<div style="margin-top:40px;">
+<a href="{{ site.baseurl }}/">🏠 Home</a>
+</div>
 
 </body>
 </html>
