@@ -1,6 +1,6 @@
-let audioCtx, layers={}, gains={}, panner;
+let audioCtx, layers={}, gains={}, panner, timer;
 
-// ===== INIT =====
+// INIT
 function init(){
   audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
@@ -15,15 +15,13 @@ function init(){
   Object.values(layers).forEach(l=>{
     l.source.connect(panner).connect(audioCtx.destination);
     l.audio.play();
-    l.gain.gain.value=0; // 🔥 전부 0으로 시작
+    l.gain.gain.value=0;
   });
 
-  gains.rain.gain.value=0.5; // 기본
-
-  load();
+  gains.rain.gain.value=0.5;
 }
 
-// ===== CREATE =====
+// CREATE
 function create(name,file){
   let a=new Audio(file);
   a.loop=true;
@@ -37,84 +35,75 @@ function create(name,file){
   gains[name]=g;
 }
 
-// ===== TOGGLE =====
+// START
 function toggle(){
   if(!audioCtx) init();
   else audioCtx.state==="running"?audioCtx.suspend():audioCtx.resume();
 }
 
-// ===== VOLUME =====
-function setVolume(name,val){
-  fadeTo(gains[name], val);
+// MODE
+function applyMode(m){
+  reset();
+
+  if(m==="sleep"){
+    fade(gains.rain,0.3);
+    fade(gains.drone,0.2);
+  }
+
+  if(m==="focus"){
+    fade(gains.rain,0.5);
+    fade(gains.cafe,0.2);
+  }
+
+  if(m==="relax"){
+    fade(gains.rain,0.4);
+    fade(gains.wind,0.2);
+  }
+
+  if(m==="anxiety"){
+    fade(gains.rain,0.2);
+  }
 }
 
-// ===== FADE =====
-function fadeTo(gainNode, target){
-  let step=(target - gainNode.gain.value)/20;
+// FADE
+function fade(gain,target){
+  let step=(target-gain.gain.value)/20;
   let i=0;
 
   let f=setInterval(()=>{
-    gainNode.gain.value += step;
+    gain.gain.value+=step;
     i++;
     if(i>=20) clearInterval(f);
   },50);
 }
 
-// ===== MODE =====
-function applyMode(m){
-  reset();
-
-  if(m==="sleep"){
-    fadeTo(gains.rain,0.3);
-    fadeTo(gains.drone,0.2);
-  }
-
-  if(m==="focus"){
-    fadeTo(gains.rain,0.5);
-    fadeTo(gains.cafe,0.2);
-  }
-
-  if(m==="relax"){
-    fadeTo(gains.rain,0.4);
-    fadeTo(gains.wind,0.2);
-  }
-
-  if(m==="anxiety"){
-    fadeTo(gains.rain,0.2);
-  }
-}
-
-// ===== RESET =====
+// RESET
 function reset(){
-  Object.values(gains).forEach(g=>fadeTo(g,0));
+  Object.values(gains).forEach(g=>fade(g,0));
 }
 
-// ===== PAN =====
+// VOLUME
+function setVolume(name,val){
+  fade(gains[name],val);
+}
+
+// PAN
 document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("pan").addEventListener("input",e=>{
     if(panner) panner.pan.value=e.target.value;
   });
 });
 
-// ===== SAVE =====
-function save(){
-  let data={};
-  Object.keys(gains).forEach(k=>{
-    data[k]=gains[k].gain.value;
-  });
-  data.pan=panner.pan.value;
+// TIMER
+function setTimer(m){
+  clearInterval(timer);
+  let t=m*60;
 
-  localStorage.setItem("rainmind",JSON.stringify(data));
-}
-
-// ===== LOAD =====
-function load(){
-  let d=JSON.parse(localStorage.getItem("rainmind"));
-  if(!d) return;
-
-  Object.keys(gains).forEach(k=>{
-    if(d[k]!=undefined) gains[k].gain.value=d[k];
-  });
-
-  panner.pan.value=d.pan || 0;
+  timer=setInterval(()=>{
+    t--;
+    Object.values(gains).forEach(g=>{
+      g.gain.value*=0.999;
+    });
+    if(t<=0) clearInterval(timer);
+  },1000);
 }
