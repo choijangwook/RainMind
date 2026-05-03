@@ -1,12 +1,8 @@
 ---
 layout: post
-title: "Rain Sounds for Deep Sleep"
-description: "Sleep better with rain sounds"
+title: "Meditation with Rain Sounds"
+description: "Enhance meditation with natural ambience"
 categories: [meditation]
 ---
 
-## 🌧 Rain Sounds for Sleep
-
-Rain sound helps calm your mind and improve sleep quality.
-
-👉 [Start Sleep Mode]({{ site.baseurl }}/index.html)
+Rain enhances mindfulness.
