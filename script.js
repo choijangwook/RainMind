@@ -1,35 +1,37 @@
-let audioCtx, layers={}, gains={}, timer;
+let audioCtx, gains={}, sources={}, timer;
 let isPlaying=false;
 
 // INIT
 function init(){
+  if(audioCtx) return;
+
   audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
-  ["rain","cafe","wind","thunder","drone"].forEach(n=>{
-    let a=new Audio("sounds/"+n+".mp3");
-    a.loop=true;
+  ["rain","cafe","wind","thunder","drone"].forEach(name=>{
+    let audio=new Audio("sounds/"+name+".mp3");
+    audio.loop=true;
 
-    let s=audioCtx.createMediaElementSource(a);
-    let g=audioCtx.createGain();
+    let src=audioCtx.createMediaElementSource(audio);
+    let gain=audioCtx.createGain();
 
-    s.connect(g).connect(audioCtx.destination);
-    a.play();
+    src.connect(gain).connect(audioCtx.destination);
 
-    layers[n]={audio:a,gain:g};
-    gains[n]=g;
-    g.gain.value=0;
+    gain.gain.value=0;
+
+    audio.play();
+
+    gains[name]=gain;
+    sources[name]=audio;
   });
 
   autoMode();
-  fetchWeather();
 }
 
 // START/STOP
 function toggle(){
-  if(!audioCtx){
-    init();
-    isPlaying=true;
-  } else if(audioCtx.state==="running"){
+  init();
+
+  if(audioCtx.state==="running"){
     audioCtx.suspend();
     isPlaying=false;
   } else {
@@ -42,6 +44,8 @@ function toggle(){
 
 // MODE
 function applyMode(btn,mode){
+  init();
+
   document.querySelectorAll(".btn-group button")
     .forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
@@ -54,37 +58,21 @@ function applyMode(btn,mode){
   if(mode==="anxiety"){ fade("rain",0.2); }
 }
 
-// AUTO MODE (시간)
+// AUTO MODE
 function autoMode(){
   let h=new Date().getHours();
-  if(h<6||h>22) applyModeFake("sleep");
-  else if(h<18) applyModeFake("focus");
-  else applyModeFake("relax");
-}
-
-// 날씨
-function fetchWeather(){
-  fetch("https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=127&current_weather=true")
-  .then(r=>r.json())
-  .then(d=>{
-    if(d.current_weather.weathercode<60){
-      fade("rain",0.6);
-      fade("thunder",0.2);
-    }
-  });
+  if(h<6||h>22) fade("rain",0.3);
+  else fade("rain",0.5);
 }
 
 // FADE
 function fade(name,val){
   let g=gains[name];
-  let step=(val-g.gain.value)/20;
-  let i=0;
+  if(!g) return;
 
-  let f=setInterval(()=>{
-    g.gain.value+=step;
-    i++;
-    if(i>=20) clearInterval(f);
-  },30);
+  val=Math.max(0,Math.min(1,val));
+
+  g.gain.value=val < 0.01 ? 0 : val;
 }
 
 // RESET
@@ -94,18 +82,23 @@ function reset(){
 
 // VOLUME
 function setVolume(name,val){
+  init();
   fade(name,parseFloat(val));
 }
 
 // TIMER
-function setTimer(m){
+function setTimer(min){
+  init();
+
   clearInterval(timer);
-  let t=m*60;
+
+  let t=min*60;
 
   timer=setInterval(()=>{
     t--;
+
     if(t<=0){
-      Object.keys(gains).forEach(n=>fade(n,0));
+      reset();
       clearInterval(timer);
     }
   },1000);
@@ -122,12 +115,4 @@ function loadPreset(){
   let d=JSON.parse(localStorage.getItem("preset"));
   if(!d) return;
   Object.keys(d).forEach(k=>fade(k,d[k]));
-}
-
-// auto용
-function applyModeFake(m){
-  reset();
-  if(m==="sleep"){ fade("rain",0.3); fade("drone",0.2); }
-  if(m==="focus"){ fade("rain",0.5); fade("cafe",0.2); }
-  if(m==="relax"){ fade("rain",0.4); fade("wind",0.2); }
 }
