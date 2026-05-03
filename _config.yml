@@ -1,1 +1,8 @@
+title: RainMind
+description: Rain sounds for sleep, focus, and relaxation
 baseurl: "/RainMind"
+url: "https://choijangwook.github.io"
+
+markdown: kramdown
+
+permalink: /:categories/:title/
