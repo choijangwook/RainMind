@@ -9,3 +9,5 @@ permalink: /privacy/
 This site uses Google AdSense.
 
 Cookies may be used to personalize ads.
+
+👉 [🏠 Back to Home]({{ site.baseurl }}/index.html)
