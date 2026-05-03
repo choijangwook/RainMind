@@ -7,10 +7,6 @@ body {
 
 .section { margin:20px; }
 
-.btn-group button.active {
-  background:#2563eb;
-}
-
 button {
   margin:5px;
   padding:12px;
@@ -20,20 +16,15 @@ button {
   color:white;
 }
 
-#mainBtn {
-  width:90%;
-  padding:16px;
-  font-size:18px;
-  margin-top:20px;
+.btn-group button.active {
   background:#2563eb;
 }
 
 .row {
   display:flex;
-  align-items:center;
   justify-content:center;
   gap:10px;
-  margin:5px 0;
+  margin:5px;
 }
 
 .row span {
@@ -43,4 +34,21 @@ button {
 
 input[type="range"] {
   width:60%;
+}
+
+.ad {
+  margin:20px auto;
+  max-width:320px;
+}
+
+#mainBtn {
+  width:90%;
+  padding:16px;
+  font-size:18px;
+  background:#2563eb;
+}
+
+.info {
+  margin:20px;
+  opacity:0.8;
 }
