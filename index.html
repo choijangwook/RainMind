@@ -11,6 +11,9 @@
 
 <h1>🌧 RainMind</h1>
 
+<!-- 🔥 TOP AD -->
+<div class="ad">광고 영역</div>
+
 <div class="section">
 <h2>Mode</h2>
 <div class="btn-group">
@@ -21,15 +24,16 @@
 </div>
 </div>
 
+<!-- 🔥 MIDDLE AD -->
+<div class="ad">광고 영역</div>
+
 <div class="section">
 <h2>Mix</h2>
-
 <div class="row"><span>Rain</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('rain', this.value)"></div>
 <div class="row"><span>Cafe</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('cafe', this.value)"></div>
 <div class="row"><span>Wind</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('wind', this.value)"></div>
 <div class="row"><span>Thunder</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('thunder', this.value)"></div>
 <div class="row"><span>Drone</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('drone', this.value)"></div>
-
 </div>
 
 <div class="section">
@@ -40,6 +44,17 @@
 <button onclick="setTimer(240)">4h</button>
 <button onclick="setTimer(480)">8h</button>
 </div>
+
+<div class="section">
+<h2>Preset</h2>
+<button onclick="savePreset()">💾 Save</button>
+<button onclick="loadPreset()">📂 Load</button>
+</div>
+
+<div class="info">💡 Tip: Rain + Cafe = 최고의 집중</div>
+
+<!-- 🔥 BOTTOM AD -->
+<div class="ad">광고 영역</div>
 
 <button id="mainBtn" onclick="toggle()">▶ Start</button>
 
