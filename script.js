@@ -1,18 +1,16 @@
-let ctx, audioCtx;
-let layers = {}, gains = {};
-let panner, timer, autoPanInterval;
+let audioCtx, layers={}, gains={}, panner;
+let timer, autoPanInt, listenTime=0;
 
-// 초기화
-function init() {
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function init(){
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
-  createLayer("rain","sounds/rain.mp3",0.5);
-  createLayer("cafe","sounds/cafe.mp3",0);
-  createLayer("wind","sounds/wind.mp3",0);
-  createLayer("thunder","sounds/thunder.mp3",0);
-  createLayer("drone","sounds/drone.mp3",0);
+  create("rain","sounds/rain.mp3",0.5);
+  create("cafe","sounds/cafe.mp3",0);
+  create("wind","sounds/wind.mp3",0);
+  create("thunder","sounds/thunder.mp3",0);
+  create("drone","sounds/drone.mp3",0);
 
-  panner = audioCtx.createStereoPanner();
+  panner=audioCtx.createStereoPanner();
 
   Object.values(layers).forEach(l=>{
     l.source.connect(panner).connect(audioCtx.destination);
@@ -20,123 +18,129 @@ function init() {
   });
 
   load();
-  initFX();
+  autoTimeMode();
+  fetchWeather();
+  trackTime();
+  fx();
 }
 
-// 레이어 생성
-function createLayer(name,file,vol){
-  let audio=new Audio(file);
-  audio.loop=true;
-
-  let source=audioCtx.createMediaElementSource(audio);
-  let gain=audioCtx.createGain();
-  gain.gain.value=vol;
-
-  source.connect(gain);
-
-  layers[name]={audio,source,gain};
-  gains[name]=gain;
+// ===== 생성 =====
+function create(n,f,v){
+  let a=new Audio(f); a.loop=true;
+  let s=audioCtx.createMediaElementSource(a);
+  let g=audioCtx.createGain(); g.gain.value=v;
+  s.connect(g);
+  layers[n]={audio:a,source:s,gain:g};
+  gains[n]=g;
 }
 
-// 토글
+// ===== 토글 =====
 function toggle(){
   if(!audioCtx) init();
   else audioCtx.state==="running"?audioCtx.suspend():audioCtx.resume();
 }
 
-// ===== MODE =====
-function applyMode(mode){
+// ===== 상태 기반 =====
+function applyState(s){
+  if(s==="sleepy") applyMode("sleep");
+  if(s==="focus") applyMode("focus");
+  if(s==="stress") applyMode("anxiety");
+}
+
+// ===== 시간 기반 =====
+function autoTimeMode(){
+  let h=new Date().getHours();
+  if(h>=23||h<6) applyMode("sleep");
+  else if(h<18) applyMode("focus");
+  else applyMode("relax");
+}
+
+// ===== 날씨 기반 =====
+function fetchWeather(){
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=127&current_weather=true")
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.current_weather.weathercode<60){
+      gains.rain.gain.value+=0.1;
+      gains.thunder.gain.value=0.1;
+    }
+  });
+}
+
+// ===== 모드 =====
+function applyMode(m){
   reset();
 
-  if(mode==="sleep"){
+  if(m==="sleep"){
     gains.rain.gain.value=0.3;
     gains.drone.gain.value=0.2;
-    slowFade();
   }
-
-  if(mode==="focus"){
+  if(m==="focus"){
     gains.rain.gain.value=0.5;
     gains.cafe.gain.value=0.2;
   }
-
-  if(mode==="relax"){
+  if(m==="relax"){
     gains.rain.gain.value=0.4;
     gains.wind.gain.value=0.2;
   }
-
-  if(mode==="anxiety"){
+  if(m==="anxiety"){
     gains.rain.gain.value=0.2;
-    stablePattern();
   }
 }
 
-// ===== EMOTION =====
-function applyEmotion(e){
-  if(e==="calm") gains.rain.gain.value*=0.9;
-  if(e==="deep") gains.rain.gain.value*=1.2;
-  if(e==="warm") gains.drone.gain.value=0.2;
-  if(e==="lowvar") stablePattern();
-}
-
 // ===== 3D =====
-function setPan(v){
-  if(panner) panner.pan.value=v;
-}
-
 document.addEventListener("DOMContentLoaded",()=>{
   document.getElementById("pan").addEventListener("input",e=>{
-    setPan(e.target.value);
+    if(panner) panner.pan.value=e.target.value;
   });
 });
 
 function autoPan(){
-  clearInterval(autoPanInterval);
-  autoPanInterval=setInterval(()=>{
+  clearInterval(autoPanInt);
+  autoPanInt=setInterval(()=>{
     panner.pan.value=Math.sin(Date.now()/2000);
   },100);
 }
 
-// ===== 패턴 =====
-function slowFade(){
-  setInterval(()=>{
-    gains.rain.gain.value*=0.9995;
-  },1000);
-}
-
-function stablePattern(){
-  setInterval(()=>{
-    gains.rain.gain.value=0.25;
-  },2000);
-}
-
-// ===== TIMER =====
+// ===== 타이머 =====
 function setTimer(m){
   clearInterval(timer);
   let t=m*60;
-
   timer=setInterval(()=>{
     t--;
-    Object.values(gains).forEach(g=>{
-      g.gain.value*=0.999;
-    });
+    Object.values(gains).forEach(g=>g.gain.value*=0.999);
     if(t<=0) clearInterval(timer);
   },1000);
 }
 
 // ===== 저장 =====
 function save(){
-  let data={
+  localStorage.setItem("rm",JSON.stringify({
     rain:gains.rain.gain.value,
     pan:panner.pan.value
-  };
-  localStorage.setItem("rainmind",JSON.stringify(data));
+  }));
 }
 
 function load(){
-  let d=JSON.parse(localStorage.getItem("rainmind"));
+  let d=JSON.parse(localStorage.getItem("rm"));
   if(!d) return;
   gains.rain.gain.value=d.rain;
   panner.pan.value=d.pan;
+}
+
+// ===== 통계 =====
+function trackTime(){
+  setInterval(()=>{
+    listenTime++;
+    localStorage.setItem("time",(+localStorage.getItem("time")||0)+1);
+    updateStats();
+  },1000);
+}
+
+function updateStats(){
+  let t=localStorage.getItem("time")||0;
+  document.getElementById("stats").innerText=
+  "Total Listening: "+Math.floor(t/60)+" min";
 }
 
 // ===== 리셋 =====
@@ -144,28 +148,22 @@ function reset(){
   Object.values(gains).forEach(g=>g.gain.value=0);
 }
 
-// ===== 인터랙션 FX =====
-function initFX(){
-  const canvas=document.getElementById("rainFX");
-  ctx=canvas.getContext("2d");
+// ===== 인터랙션 =====
+function fx(){
+  let c=document.getElementById("fx");
+  let ctx=c.getContext("2d");
+  c.width=innerWidth; c.height=innerHeight;
 
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
-
-  window.addEventListener("click",e=>{
-    drawRipple(e.clientX,e.clientY);
-  });
-}
-
-function drawRipple(x,y){
-  let r=0;
-  let anim=setInterval(()=>{
-    ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
-    ctx.beginPath();
-    ctx.arc(x,y,r,0,Math.PI*2);
-    ctx.strokeStyle="rgba(255,255,255,0.2)";
-    ctx.stroke();
-    r+=5;
-    if(r>200) clearInterval(anim);
-  },30);
+  window.onclick=e=>{
+    let r=0;
+    let anim=setInterval(()=>{
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.beginPath();
+      ctx.arc(e.clientX,e.clientY,r,0,Math.PI*2);
+      ctx.strokeStyle="rgba(255,255,255,0.2)";
+      ctx.stroke();
+      r+=5;
+      if(r>200) clearInterval(anim);
+    },30);
+  };
 }
