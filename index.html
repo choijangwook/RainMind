@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RainMind</title>
+
+<title>RainMind - Rain Sounds for Sleep & Focus</title>
+
+<meta name="description" content="Rain sounds for deep sleep, focus, and relaxation. Customize your rain environment with RainMind.">
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <h1>🌧 RainMind</h1>
 
-<!-- 🔥 TOP AD -->
-<div class="ad">광고 영역</div>
+<!-- TOP AD -->
+<div class="ad">Ad</div>
 
 <div class="section">
 <h2>Mode</h2>
@@ -24,16 +30,18 @@
 </div>
 </div>
 
-<!-- 🔥 MIDDLE AD -->
-<div class="ad">광고 영역</div>
+<!-- MID AD -->
+<div class="ad">Ad</div>
 
 <div class="section">
 <h2>Mix</h2>
-<div class="row"><span>Rain</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('rain', this.value)"></div>
-<div class="row"><span>Cafe</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('cafe', this.value)"></div>
-<div class="row"><span>Wind</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('wind', this.value)"></div>
-<div class="row"><span>Thunder</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('thunder', this.value)"></div>
-<div class="row"><span>Drone</span><input type="range" min="0" max="1" step="0.01" onchange="setVolume('drone', this.value)"></div>
+
+<div class="row"><span>Rain</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('rain', this.value)"></div>
+<div class="row"><span>Cafe</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('cafe', this.value)"></div>
+<div class="row"><span>Wind</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('wind', this.value)"></div>
+<div class="row"><span>Thunder</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('thunder', this.value)"></div>
+<div class="row"><span>Drone</span><input type="range" min="0" max="1" step="0.01" oninput="setVolume('drone', this.value)"></div>
+
 </div>
 
 <div class="section">
@@ -46,15 +54,17 @@
 </div>
 
 <div class="section">
-<h2>Preset</h2>
 <button onclick="savePreset()">💾 Save</button>
 <button onclick="loadPreset()">📂 Load</button>
 </div>
 
-<div class="info">💡 Tip: Rain + Cafe = 최고의 집중</div>
+<div class="info">
+🌧 Deep rain sound helps reduce stress and improve focus.  
+Try Rain + Cafe for productivity.
+</div>
 
-<!-- 🔥 BOTTOM AD -->
-<div class="ad">광고 영역</div>
+<!-- BOTTOM AD -->
+<div class="ad">Ad</div>
 
 <button id="mainBtn" onclick="toggle()">▶ Start</button>
 
