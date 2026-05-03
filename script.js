@@ -1,37 +1,27 @@
-let audioCtx, layers={}, gains={}, panner, timer;
+let audioCtx, layers={}, gains={}, timer;
 let isPlaying=false;
 
 // INIT
 function init(){
   audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 
-  create("rain","sounds/rain.mp3");
-  create("cafe","sounds/cafe.mp3");
-  create("wind","sounds/wind.mp3");
-  create("thunder","sounds/thunder.mp3");
-  create("drone","sounds/drone.mp3");
+  ["rain","cafe","wind","thunder","drone"].forEach(n=>{
+    let a=new Audio("sounds/"+n+".mp3");
+    a.loop=true;
 
-  panner=audioCtx.createStereoPanner();
+    let s=audioCtx.createMediaElementSource(a);
+    let g=audioCtx.createGain();
 
-  Object.values(layers).forEach(l=>{
-    l.source.connect(panner).connect(audioCtx.destination);
-    l.audio.play();
-    l.gain.gain.value=0;
+    s.connect(g).connect(audioCtx.destination);
+    a.play();
+
+    layers[n]={audio:a,gain:g};
+    gains[n]=g;
+    g.gain.value=0;
   });
-}
 
-// CREATE
-function create(name,file){
-  let a=new Audio(file);
-  a.loop=true;
-
-  let s=audioCtx.createMediaElementSource(a);
-  let g=audioCtx.createGain();
-
-  s.connect(g);
-
-  layers[name]={audio:a,source:s,gain:g};
-  gains[name]=g;
+  autoMode();
+  fetchWeather();
 }
 
 // START/STOP
@@ -47,11 +37,10 @@ function toggle(){
     isPlaying=true;
   }
 
-  document.getElementById("mainBtn").innerText =
-    isPlaying ? "⏸ Stop" : "▶ Start";
+  mainBtn.innerText = isPlaying ? "⏸ Stop" : "▶ Start";
 }
 
-// MODE + ACTIVE UI
+// MODE
 function applyMode(btn,mode){
   document.querySelectorAll(".btn-group button")
     .forEach(b=>b.classList.remove("active"));
@@ -59,34 +48,36 @@ function applyMode(btn,mode){
 
   reset();
 
-  if(mode==="sleep"){
-    fade(gains.rain,0.3);
-    fade(gains.drone,0.25);
-  }
-
-  if(mode==="focus"){
-    fade(gains.rain,0.5);
-    fade(gains.cafe,0.25);
-  }
-
-  if(mode==="relax"){
-    fade(gains.rain,0.4);
-    fade(gains.wind,0.25);
-  }
-
-  if(mode==="anxiety"){
-    fade(gains.rain,0.2);
-  }
+  if(mode==="sleep"){ fade("rain",0.3); fade("drone",0.25); }
+  if(mode==="focus"){ fade("rain",0.5); fade("cafe",0.25); }
+  if(mode==="relax"){ fade("rain",0.4); fade("wind",0.25); }
+  if(mode==="anxiety"){ fade("rain",0.2); }
 }
 
-// VOLUME
-function setVolume(name,val){
-  fade(gains[name],parseFloat(val));
+// AUTO MODE (시간)
+function autoMode(){
+  let h=new Date().getHours();
+  if(h<6||h>22) applyModeFake("sleep");
+  else if(h<18) applyModeFake("focus");
+  else applyModeFake("relax");
+}
+
+// 날씨
+function fetchWeather(){
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=37.5&longitude=127&current_weather=true")
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.current_weather.weathercode<60){
+      fade("rain",0.6);
+      fade("thunder",0.2);
+    }
+  });
 }
 
 // FADE
-function fade(g,target){
-  let step=(target-g.gain.value)/20;
+function fade(name,val){
+  let g=gains[name];
+  let step=(val-g.gain.value)/20;
   let i=0;
 
   let f=setInterval(()=>{
@@ -96,29 +87,47 @@ function fade(g,target){
   },30);
 }
 
-// RESET (완전 무음)
+// RESET
 function reset(){
   Object.values(gains).forEach(g=>g.gain.value=0);
 }
 
+// VOLUME
+function setVolume(name,val){
+  fade(name,parseFloat(val));
+}
+
 // TIMER
-function setTimer(min){
+function setTimer(m){
   clearInterval(timer);
-  let t=min*60;
+  let t=m*60;
 
   timer=setInterval(()=>{
     t--;
-
     if(t<=0){
-      fadeOutAll();
+      Object.keys(gains).forEach(n=>fade(n,0));
       clearInterval(timer);
     }
   },1000);
 }
 
-// 전체 페이드 아웃
-function fadeOutAll(){
-  Object.values(gains).forEach(g=>{
-    fade(g,0);
-  });
+// PRESET
+function savePreset(){
+  let data={};
+  Object.keys(gains).forEach(k=>data[k]=gains[k].gain.value);
+  localStorage.setItem("preset",JSON.stringify(data));
+}
+
+function loadPreset(){
+  let d=JSON.parse(localStorage.getItem("preset"));
+  if(!d) return;
+  Object.keys(d).forEach(k=>fade(k,d[k]));
+}
+
+// auto용
+function applyModeFake(m){
+  reset();
+  if(m==="sleep"){ fade("rain",0.3); fade("drone",0.2); }
+  if(m==="focus"){ fade("rain",0.5); fade("cafe",0.2); }
+  if(m==="relax"){ fade("rain",0.4); fade("wind",0.2); }
 }
