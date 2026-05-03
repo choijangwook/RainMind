@@ -287,3 +287,29 @@ function safeBind(el, fn){
 }
 
 
+// =========================
+// ⏱ PC 타이머 초기 렌더 보정
+// =========================
+document.addEventListener("DOMContentLoaded", ()=>{
+  setTimeout(()=>{
+    if(typeof updateTimerDisplay === "function"){
+      updateTimerDisplay();
+    }
+  },150);
+});
+
+
+// =========================
+// 📱 Brave Mobile touch fix
+// =========================
+document.addEventListener("touchstart", ()=>{}, {passive:true});
+
+
+// =========================
+// 🧠 안전 클릭 바인더 (옵션)
+// =========================
+function safeBind(el, fn){
+  if(!el) return;
+  el.addEventListener("click", fn);
+  el.addEventListener("touchstart", fn, {passive:true});
+}
