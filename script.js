@@ -9,7 +9,6 @@ const sounds = {
   drone: new Audio("sounds/drone.mp3")
 };
 
-// 초기 세팅
 Object.values(sounds).forEach(a=>{
   a.loop = true;
   a.volume = 0;
@@ -17,11 +16,9 @@ Object.values(sounds).forEach(a=>{
 
 document.addEventListener("DOMContentLoaded", ()=>{
 
-  console.log("RainMind loaded");
-
-  // ▶ Start / Stop
   const mainBtn = document.getElementById("mainBtn");
 
+  // ▶ Start / Stop
   if(mainBtn){
     mainBtn.addEventListener("click", async ()=>{
 
@@ -39,7 +36,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   }
 
-  // 🎚 BAR (슬라이더)
+  // 🎚 sliders
   document.querySelectorAll("input[type=range]").forEach(slider=>{
     slider.addEventListener("input", (e)=>{
       const key = e.target.dataset.sound;
@@ -49,21 +46,28 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   });
 
-  // 🎯 프리셋 버튼 강제 연결 (핵심)
-  document.querySelectorAll(".preset-row button, .grid button").forEach(btn=>{
-    const txt = btn.innerText.toLowerCase();
+  // 🎯 preset + timer + save/load 강제 연결
+  document.querySelectorAll("button").forEach(btn=>{
 
-    if(txt.includes("sleep")) btn.onclick = ()=>applyPresetUI(btn,"sleep");
-    if(txt.includes("focus")) btn.onclick = ()=>applyPresetUI(btn,"focus");
-    if(txt.includes("relax")) btn.onclick = ()=>applyPresetUI(btn,"relax");
-    if(txt.includes("anxiety")) btn.onclick = ()=>applyPresetUI(btn,"anxiety");
+    const t = btn.innerText.toLowerCase();
 
-    // timer 버튼
-    if(txt.includes("30m")) btn.onclick = ()=>timerUI(btn,30);
-    if(txt.includes("1h")) btn.onclick = ()=>timerUI(btn,60);
-    if(txt.includes("2h")) btn.onclick = ()=>timerUI(btn,120);
-    if(txt.includes("4h")) btn.onclick = ()=>timerUI(btn,240);
-    if(txt.includes("8h")) btn.onclick = ()=>timerUI(btn,480);
+    // preset
+    if(t.includes("sleep")) btn.onclick = ()=>applyPreset(btn,"sleep");
+    if(t.includes("focus")) btn.onclick = ()=>applyPreset(btn,"focus");
+    if(t.includes("relax")) btn.onclick = ()=>applyPreset(btn,"relax");
+    if(t.includes("anxiety")) btn.onclick = ()=>applyPreset(btn,"anxiety");
+
+    // timer
+    if(t === "30m") btn.onclick = ()=>timerUI(btn,30);
+    if(t === "1h") btn.onclick = ()=>timerUI(btn,60);
+    if(t === "2h") btn.onclick = ()=>timerUI(btn,120);
+    if(t === "4h") btn.onclick = ()=>timerUI(btn,240);
+    if(t === "8h") btn.onclick = ()=>timerUI(btn,480);
+
+    // 💾 SAVE / LOAD (🔥 핵심 수정)
+    if(t.includes("save")) btn.onclick = saveMix;
+    if(t.includes("load")) btn.onclick = loadMix;
+
   });
 
 });
@@ -72,10 +76,10 @@ document.addEventListener("DOMContentLoaded", ()=>{
 function stopAll(){
   Object.values(sounds).forEach(a=>a.pause());
 
-  const btn = document.getElementById("mainBtn");
-  if(btn){
-    btn.innerText = "▶ Start";
-    btn.classList.remove("active");
+  const mainBtn = document.getElementById("mainBtn");
+  if(mainBtn){
+    mainBtn.innerText = "▶ Start";
+    mainBtn.classList.remove("active");
   }
 
   isPlaying = false;
@@ -83,7 +87,7 @@ function stopAll(){
 }
 
 // 🎯 preset
-function applyPresetUI(el,mode){
+function applyPreset(el,mode){
 
   document.querySelectorAll("button").forEach(b=>{
     if(b.classList) b.classList.remove("active");
@@ -110,7 +114,7 @@ function applyPresetUI(el,mode){
 // ⏱ timer
 function timerUI(el,min){
 
-  document.querySelectorAll(".grid button").forEach(b=>{
+  document.querySelectorAll("button").forEach(b=>{
     b.classList.remove("active");
   });
 
@@ -143,6 +147,34 @@ function fadeOut(){
     }
 
   },200);
+}
+
+// 💾 SAVE
+function saveMix(){
+  let data = {};
+  Object.keys(sounds).forEach(k=>{
+    data[k] = sounds[k].volume;
+  });
+
+  localStorage.setItem("rainmix", JSON.stringify(data));
+  alert("Saved ✔");
+}
+
+// 📂 LOAD
+function loadMix(){
+  let data = localStorage.getItem("rainmix");
+  if(!data){
+    alert("No saved data");
+    return;
+  }
+
+  let obj = JSON.parse(data);
+
+  Object.keys(obj).forEach(k=>{
+    if(sounds[k]) sounds[k].volume = obj[k];
+  });
+
+  updateSliders();
 }
 
 // 🎚 sync
