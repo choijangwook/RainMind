@@ -1,7 +1,6 @@
 let isPlaying = false;
 let timerId = null;
 
-// 🎧 사운드
 const sounds = {
   rain: new Audio("sounds/rain.mp3"),
   cafe: new Audio("sounds/cafe.mp3"),
@@ -10,35 +9,37 @@ const sounds = {
   drone: new Audio("sounds/drone.mp3")
 };
 
-// 초기
-Object.values(sounds).forEach(a=>{
+// 초기화
+Object.values(sounds).forEach(a => {
   a.loop = true;
   a.volume = 0;
 });
 
-// ▶ 버튼
-document.addEventListener("DOMContentLoaded",()=>{
+// ▶ Start / Stop
+document.addEventListener("DOMContentLoaded", () => {
 
   const btn = document.getElementById("mainBtn");
 
-  btn.addEventListener("click", async ()=>{
+  btn.addEventListener("click", async () => {
 
-    if(!isPlaying){
-      for(let a of Object.values(sounds)){
-        try{ await a.play(); }catch(e){}
+    if (!isPlaying) {
+      for (let a of Object.values(sounds)) {
+        try { await a.play(); } catch(e){}
       }
-      btn.innerText="⏸ Stop";
-      isPlaying=true;
-    }else{
+      btn.innerText = "⏸ Stop";
+      btn.classList.add("active");
+      isPlaying = true;
+    } else {
       stopAll();
     }
 
   });
 
   // 🎚 슬라이더
-  document.querySelectorAll("input[type=range]").forEach(slider=>{
-    slider.addEventListener("input",e=>{
-      sounds[e.target.dataset.sound].volume=parseFloat(e.target.value);
+  document.querySelectorAll("input[type=range]").forEach(slider => {
+    slider.addEventListener("input", (e) => {
+      const name = e.target.dataset.sound;
+      sounds[name].volume = parseFloat(e.target.value);
     });
   });
 
@@ -46,74 +47,99 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 // ⛔ 정지
 function stopAll(){
-  Object.values(sounds).forEach(a=>a.pause());
-  document.getElementById("mainBtn").innerText="▶ Start";
-  isPlaying=false;
+  Object.values(sounds).forEach(a => a.pause());
+  const btn = document.getElementById("mainBtn");
+  btn.innerText = "▶ Start";
+  btn.classList.remove("active");
+  isPlaying = false;
   clearTimeout(timerId);
 }
 
-// 🎯 프리셋
+// 🎯 프리셋 (🔥 이거 없어서 다 죽은거)
 function applyPreset(mode){
 
-  const presets={
-    sleep:{rain:0.7, wind:0.2, drone:0.2},
-    focus:{rain:0.5, cafe:0.3},
-    relax:{rain:0.6, wind:0.3},
-    anxiety:{rain:0.8, drone:0.3}
+  const presets = {
+    sleep:   {rain:0.7, wind:0.2, drone:0.2},
+    focus:   {rain:0.5, cafe:0.3},
+    relax:   {rain:0.6, wind:0.3},
+    anxiety: {rain:0.8, drone:0.3}
   };
 
-  Object.keys(sounds).forEach(k=>sounds[k].volume=0);
+  Object.keys(sounds).forEach(k => sounds[k].volume = 0);
 
-  for(let k in presets[mode]){
-    sounds[k].volume=presets[mode][k];
+  for (let k in presets[mode]){
+    sounds[k].volume = presets[mode][k];
   }
 
-  document.querySelectorAll("input[type=range]").forEach(s=>{
-    s.value=sounds[s.dataset.sound].volume;
-  });
-
+  updateSliders();
 }
 
-// ⏱ 타이머 + 페이드아웃
-function setTimer(min){
+// 🎯 버튼 클릭 UI
+function presetClick(el, mode){
 
+  document.querySelectorAll(".preset-btn")
+    .forEach(b => b.classList.remove("active"));
+
+  el.classList.add("active");
+
+  applyPreset(mode);
+}
+
+// ⏱ 타이머
+function setTimer(min){
   clearTimeout(timerId);
 
-  timerId=setTimeout(()=>{
+  timerId = setTimeout(()=>{
     fadeOut();
-  }, min*60*1000);
-
+  }, min * 60000);
 }
 
-// 🌙 페이드아웃 (수면 핵심)
+// 🌙 페이드아웃
 function fadeOut(){
 
-  let interval=setInterval(()=>{
-
-    let done=true;
+  let i = setInterval(()=>{
+    let done = true;
 
     Object.values(sounds).forEach(a=>{
-      if(a.volume>0.01){
-        a.volume-=0.01;
-        done=false;
+      if(a.volume > 0.01){
+        a.volume -= 0.01;
+        done = false;
       }
     });
 
     if(done){
-      clearInterval(interval);
+      clearInterval(i);
       stopAll();
     }
 
-  },200);
-
+  }, 200);
 }
 
-let isPlaying=false;
+// 💾 저장
+function saveMix(){
+  let data = {};
+  Object.keys(sounds).forEach(k => data[k] = sounds[k].volume);
+  localStorage.setItem("rainmix", JSON.stringify(data));
+  alert("Saved");
+}
 
-function presetClick(el,mode){
+// 📂 불러오기
+function loadMix(){
+  let data = localStorage.getItem("rainmix");
+  if(!data) return;
 
-  document.querySelectorAll(".grid button").forEach(b=>b.classList.remove("active"));
-  el.classList.add("active");
+  let obj = JSON.parse(data);
 
-  applyPreset(mode);
+  Object.keys(obj).forEach(k=>{
+    if(sounds[k]) sounds[k].volume = obj[k];
+  });
+
+  updateSliders();
+}
+
+// 🎚 슬라이더 반영
+function updateSliders(){
+  document.querySelectorAll("input[type=range]").forEach(s=>{
+    s.value = sounds[s.dataset.sound].volume;
+  });
 }
