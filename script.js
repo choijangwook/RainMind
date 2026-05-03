@@ -1,4 +1,4 @@
-let audioCtx, gains={}, sources={}, timer;
+let audioCtx, gains={}, timer;
 let isPlaying=false;
 
 // INIT
@@ -21,15 +21,14 @@ function init(){
     audio.play();
 
     gains[name]=gain;
-    sources[name]=audio;
   });
-
-  autoMode();
 }
 
 // START/STOP
 function toggle(){
   init();
+
+  const btn = document.getElementById("mainBtn");
 
   if(audioCtx.state==="running"){
     audioCtx.suspend();
@@ -39,7 +38,7 @@ function toggle(){
     isPlaying=true;
   }
 
-  mainBtn.innerText = isPlaying ? "⏸ Stop" : "▶ Start";
+  btn.innerText = isPlaying ? "⏸ Stop" : "▶ Start";
 }
 
 // MODE
@@ -58,21 +57,12 @@ function applyMode(btn,mode){
   if(mode==="anxiety"){ fade("rain",0.2); }
 }
 
-// AUTO MODE
-function autoMode(){
-  let h=new Date().getHours();
-  if(h<6||h>22) fade("rain",0.3);
-  else fade("rain",0.5);
-}
-
-// FADE
+// FADE (즉시 안정형)
 function fade(name,val){
-  let g=gains[name];
-  if(!g) return;
+  if(!gains[name]) return;
 
-  val=Math.max(0,Math.min(1,val));
-
-  g.gain.value=val < 0.01 ? 0 : val;
+  val = Math.max(0, Math.min(1, val));
+  gains[name].gain.value = val < 0.01 ? 0 : val;
 }
 
 // RESET
@@ -83,7 +73,7 @@ function reset(){
 // VOLUME
 function setVolume(name,val){
   init();
-  fade(name,parseFloat(val));
+  fade(name, parseFloat(val));
 }
 
 // TIMER
@@ -104,15 +94,28 @@ function setTimer(min){
   },1000);
 }
 
-// PRESET
+// SAVE
 function savePreset(){
+  init();
+
   let data={};
-  Object.keys(gains).forEach(k=>data[k]=gains[k].gain.value);
-  localStorage.setItem("preset",JSON.stringify(data));
+  Object.keys(gains).forEach(k=>{
+    data[k]=gains[k].gain.value;
+  });
+
+  localStorage.setItem("rainmind", JSON.stringify(data));
 }
 
+// LOAD
 function loadPreset(){
-  let d=JSON.parse(localStorage.getItem("preset"));
+  init();
+
+  let d = localStorage.getItem("rainmind");
   if(!d) return;
-  Object.keys(d).forEach(k=>fade(k,d[k]));
+
+  d = JSON.parse(d);
+
+  Object.keys(d).forEach(k=>{
+    fade(k, d[k]);
+  });
 }
