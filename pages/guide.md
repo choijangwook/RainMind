@@ -1,7 +1,6 @@
-#### 🌧 사용 방법
-
-- ▶ Start 버튼을 눌러 소리를 시작하세요  
-- 슬라이더로 원하는 소리를 조합하세요  
-- 😴 / 📚 / 🧘 / 😟 버튼으로 빠른 설정 가능
-- 원하는 상태를 save하면 언제든 load로 불러올수 있습니다
-- 타이머를 설정하면 자동으로 종료됩니다  
+#### 🌧 How to use
+▶ Press the Start button to start the sound
+Combine the sounds you want with the slider
+😴 / 📚 / 🧘 / 😟 button for quick setup
+save the state you want, you can load it anytime
+timer, it will automatically shut down
